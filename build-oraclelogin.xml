@@ -1,0 +1,45 @@
+<project name="oraclelogin" default="dist" basedir=".">
+  <description>
+    simple build file for jettyprism, so it can be build without netbeans
+  </description>
+  <property environment="env"/>
+  <property name="src" location="src"/>
+  <property name="testsrc" location="test"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+
+<fileset dir="${env.oraclelibs}" casesensitive="no" id="libs">
+  <include name="ojdbc6.jar"/>
+</fileset>
+
+  <target name="clean"
+          description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+<target name="init" depends="clean">
+  <!-- Create the time stamp -->
+  <!--tstamp/-->
+  <mkdir dir="${build}"/>
+</target>
+
+<target name="compile" depends="init"
+        description="compile the source " >
+  <javac srcdir="${src}" destdir="${build}">
+    <compilerarg value="-Xlint:unchecked"/>
+    <classpath>
+      <fileset refid="libs"/>
+    </classpath>
+  </javac>
+</target>
+
+<target name="dist" depends="compile"
+        description="generate the distribution" >
+  <mkdir dir="${dist}/lib"/>
+  <jar jarfile="${dist}/oraclelogin.jar" basedir="${build}">
+  </jar>
+</target>
+
+</project>
