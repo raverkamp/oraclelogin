@@ -14,7 +14,7 @@ To run the tests:
 %ant% -f ".\build-oraclelogin.xml" test
 
 or
->%ant% -f ".\build-oraclelogin.xml" testgui
+%ant% -f ".\build-oraclelogin.xml" testgui
 which just starts up the gui.
 
 
