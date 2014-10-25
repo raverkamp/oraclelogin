@@ -1,0 +1,7 @@
+# netbeans specific
+build.xml
+/build/
+/dist/
+/nbproject
+**/*.*~
+config.bat
