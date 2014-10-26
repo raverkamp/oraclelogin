@@ -1,8 +1,5 @@
 package spinat.oraclelogin;
 
-import java.awt.Frame;
-import javax.swing.SwingUtilities;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
