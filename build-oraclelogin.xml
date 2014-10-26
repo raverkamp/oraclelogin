@@ -7,7 +7,7 @@
   <property name="testsrc" location="test"/>
   <property name="build" location="build"/>
   <property name="dist"  location="dist"/>
-  <property name="junit-jar" location="${env.junitjar}"/>
+  <property name="junitjar" location="${env.junitjar}"/>
 
 <fileset dir="${env.oraclelibs}" casesensitive="no" id="libs">
   <include name="ojdbc6.jar"/>
@@ -28,7 +28,7 @@
 
 <target name="compile" depends="init"
         description="compile the source" >
-  <javac srcdir="${src}" destdir="${build}" debug="true">
+  <javac srcdir="${src}" destdir="${build}" debug="true" includeantruntime="false">
     <compilerarg value="-Xlint:unchecked"/>
     <classpath>
       <fileset refid="libs"/>
@@ -44,23 +44,22 @@
 </target>
 
 <target name="testclasses" depends="dist">
-  <javac srcdir="${testsrc}" destdir="${build}" debug="true">
+  <javac srcdir="${testsrc}" destdir="${build}" debug="true" includeantruntime="false">
     <classpath>
-      <file name="${junit-jar}"/>
-      <file name="${dist}/oraclelogin.jar"/>
+      <pathelement location="${junitjar}"/>
+      <pathelement  location="${dist}/oraclelogin.jar"/>
       <fileset refid="libs"/>
     </classpath>
   </javac>
 </target>
-
 
 <target name="test" depends="dist,testclasses">
   <junit fork="yes" printsummary="true" showoutput="true">
     <jvmarg value="-Djava.compiler=NONE"/>
     <test name="spinat.oraclelogin.TestParse"/>
     <classpath>
-      <file name="${dist}/oraclelogin.jar"/>
-      <file name="${junit-jar}"/>
+      <pathelement location="${junitjar}"/>
+      <pathelement  location="${dist}/oraclelogin.jar"/>
       <fileset refid="libs"/>
       <pathelement path="${build}"/>
     </classpath>
@@ -73,9 +72,9 @@
     <jvmarg value="-Djava.compiler=NONE"/>
     <test name="spinat.oraclelogin.TestGui"/>
     <classpath>
-      <file name="${dist}/oraclelogin.jar"/>
-      <file name="${junit-jar}"/>
-      <fileset refid="libs"/>
+       <pathelement location="${junitjar}"/>
+       <pathelement  location="${dist}/oraclelogin.jar"/>
+       <fileset refid="libs"/>
       <pathelement path="${build}"/>
     </classpath>
     <formatter type="plain" usefile="false"/>
