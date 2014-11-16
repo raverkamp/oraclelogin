@@ -7,3 +7,4 @@ build.xml
 *.*~
 config.bat
 config.sh
+*.bak

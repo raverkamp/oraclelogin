@@ -4,26 +4,53 @@ import java.sql.SQLException;
 import oracle.jdbc.OracleConnection;
 import java.text.ParseException;
 
+/**
+ * @author rav
+ * describes an oracle jdbc connection
+ */
 public abstract class OraConnectionDesc {
 
     protected String user;
     protected String pwd;
 
+    /**
+     *
+     * @return a string representation of the connection description, 
+     * but without the password
+     */
     public abstract String display();
     
+    /**
+     * does the connection have a password set?
+     * @return true if the connection description has password set 
+     */
     public boolean hasPwd() {
        return pwd != null;
     }
     
-    // or functional record update
+    /**
+     * set the password of the connection description
+     * @param pwd the password
+     */
     public void setPwd(String pwd) {
         this.pwd = pwd;
     }
     
+    /**
+     * get a oracle jdbc connection for the connection desription
+     * @return an oracle jdbc connection
+     * @throws SQLException
+     */
     public abstract OracleConnection getConnection() throws SQLException;
     // ensure the driver is loaded
     static final oracle.jdbc.driver.OracleDriver d = new oracle.jdbc.driver.OracleDriver();
     
+    /**
+     * parse a connection description from a string
+     * @param conStr
+     * @return connection description
+     * @throws ParseException
+     */
     public static OraConnectionDesc fromString(String conStr) throws ParseException{
         final int p = conStr.indexOf("@");
         if (p <= 0) {
@@ -39,7 +66,7 @@ public abstract class OraConnectionDesc {
             pwd = null;
         } else {
             user = userPart.substring(0, p2);
-            pwd = conStr.substring(p2 + 1);
+            pwd = userPart.substring(p2 + 1);
         }
         
         final int pcolon1 = rest.indexOf(":");

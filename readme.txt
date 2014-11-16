@@ -1,4 +1,6 @@
-This is a Java library for handling oracle logins.
+This is a Java library for handling oracle logins. 
+And my first try at using git. 
+
 
 How to build:
 I have a config file config.bat with contents
@@ -16,5 +18,8 @@ To run the tests:
 or
 %ant% -f ".\build-oraclelogin.xml" testgui
 which just starts up the gui.
+
+
+
 
 

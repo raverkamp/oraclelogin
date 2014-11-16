@@ -10,6 +10,11 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 import oracle.jdbc.OracleConnection;
 
+/**
+ * a class to pop up a dialog to get a connection description from the user
+ *
+ * @author rav
+ */
 public final class OracleLogin {
 
     final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -40,16 +45,36 @@ public final class OracleLogin {
     final String title;
     final String preferencesKey;
 
+    /**
+     * create a OracleLogin object, input can be gotten from the user by calling
+     * doLogin
+     *
+     * @param title the title of the dialog
+     * @param preferencesKey the key under which to store the connection history
+     */
     public OracleLogin(String title, String preferencesKey) {
         this.title = title;
         this.preferencesKey = preferencesKey;
     }
 
+    private void adJustControlProps() {
+        boolean b = rbThin.isSelected();
+        fTns.setEnabled(!b);
+        fHost.setEnabled(b);
+        fPort.setEnabled(b);
+        fService.setEnabled(b);
+    }
+
+    /**
+     * get a oracle connection from the user
+     *
+     * @return a OracleLoginresult, which contains a connection description and
+     * a oracle connection
+     */
     public OracleLoginResult doLogin() {
 
         JPanel p = new JPanel();
-        //  GridBagLayout gbl = new GridBagLayout();
-        // p.setLayout(gbl);
+
         dialog.setContentPane(p);
         dialog.setModal(true);
         dialog.setTitle(title);
@@ -61,13 +86,10 @@ public final class OracleLogin {
         JLabel lbHist = new JLabel("Past Logins");
         JLabel lbKindOfConnection = new JLabel("Kind of Connection");
 
-
         fTns.setEnabled(false);
-
 
         setPrefferedWidth(fPort, 50);
         setMaxSize(fPort);
-
 
         rbThin.setText("Thin");
         rbFat.setText("Fat");
@@ -77,28 +99,19 @@ public final class OracleLogin {
 
         group.setSelected(rbThin.getModel(), true);
 
-
         ActionListener li = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boolean b = rbThin.isSelected();
-                fTns.setEnabled(!b);
-                fHost.setEnabled(b);
-                fPort.setEnabled(b);
-                fService.setEnabled(b);
-
+                adJustControlProps();
             }
         };
         rbFat.addActionListener(li);
         rbThin.addActionListener(li);
 
-        //Border bb = BorderFactory.createEmptyBorder(10,10,10,10);
-
         JButton btnOk = new JButton();
         btnOk.setText("Ok");
         JButton btnCancel = new JButton();
         btnCancel.setText("Cancel");
-
 
         btnCancel.addActionListener(new ActionListener() {
             @Override
@@ -115,7 +128,6 @@ public final class OracleLogin {
         });
 
         //setPrefferedWidth(histbox,100);
-
         p.setLayout(new BorderLayout());
         p.add(Box.createVerticalStrut(5), BorderLayout.NORTH);
         Box b = Box.createHorizontalBox();
@@ -142,16 +154,16 @@ public final class OracleLogin {
         c.insets = ins;
         c.gridx = 0;
         c.weightx = 0;
-        
+
         c.gridy = 0;
-        gp.add(lbHist,c);
+        gp.add(lbHist, c);
 
         c.gridy = 2;
         gp.add(lbUser, c);
-        
+
         c.gridy = 3;
         gp.add(lbPwd, c);
-        
+
         c.gridy = 4;
         Box b2 = Box.createHorizontalBox();
         b2.add(rbFat);
@@ -168,9 +180,7 @@ public final class OracleLogin {
         c.anchor = GridBagConstraints.LINE_END;
         gp.add(lbKindOfConnection, c);
 
-
         c.anchor = GridBagConstraints.LINE_END;
-
 
         c.gridwidth = 1;
         c.gridy = 5;
@@ -179,8 +189,6 @@ public final class OracleLogin {
         c.gridy = 6;
 
         gp.add(lbThin, c);
-
-       
 
         c.anchor = GridBagConstraints.LINE_START;
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -215,7 +223,6 @@ public final class OracleLogin {
 
         gp.add(bh, c);
 
-
         c.gridy = 2;
         setPrefferedWidth(fUser, 100);
         gp.add(fUser, c);
@@ -236,15 +243,12 @@ public final class OracleLogin {
         b3.add(Box.createHorizontalGlue());
         gp.add(b3, c);
 
-
         c.gridx = 3;
         c.gridy = 0;
         c.gridheight = 4;
         gp.add(Box.createGlue(), c);
 
         setUpHistBox();
-
-
 
         dialog.getRootPane().setDefaultButton(btnOk);
 
@@ -368,6 +372,7 @@ public final class OracleLogin {
                             fPort.setText("" + td.port);
                             fService.setText(td.service);
                         }
+                        adJustControlProps();
                     }
                 }
             }
