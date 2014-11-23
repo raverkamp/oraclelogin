@@ -2,6 +2,7 @@ package spinat.oraclelogin;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ public final class OracleLogin {
             connectionDesc = d;
         }
     }
+    
     OracleLoginResult res = null;
     final JTextField fUser = new JTextField();
     final JTextField fPwd = new JPasswordField(30);
@@ -44,6 +46,7 @@ public final class OracleLogin {
     JDialog dialog = new JDialog();
     final String title;
     final String preferencesKey;
+    final ConnectionCheck checker;
 
     /**
      * create a OracleLogin object, input can be gotten from the user by calling
@@ -52,29 +55,11 @@ public final class OracleLogin {
      * @param title the title of the dialog
      * @param preferencesKey the key under which to store the connection history
      */
-    public OracleLogin(String title, String preferencesKey) {
+    public OracleLogin(String title, String preferencesKey,ConnectionCheck checker) {
+        this.checker = checker;
         this.title = title;
         this.preferencesKey = preferencesKey;
-    }
-
-    private void adJustControlProps() {
-        boolean b = rbThin.isSelected();
-        fTns.setEnabled(!b);
-        fHost.setEnabled(b);
-        fPort.setEnabled(b);
-        fService.setEnabled(b);
-    }
-
-    /**
-     * get a oracle connection from the user
-     *
-     * @return a OracleLoginresult, which contains a connection description and
-     * a oracle connection
-     */
-    public OracleLoginResult doLogin() {
-
         JPanel p = new JPanel();
-
         dialog.setContentPane(p);
         dialog.setModal(true);
         dialog.setTitle(title);
@@ -253,12 +238,45 @@ public final class OracleLogin {
         dialog.getRootPane().setDefaultButton(btnOk);
 
         dialog.pack();
+        
+    }
+    
+    public OracleLogin(String title, String preferencesKey) {
+        this(title,preferencesKey,null);
+    }
+
+    private void adJustControlProps() {
+        boolean b = rbThin.isSelected();
+        fTns.setEnabled(!b);
+        fHost.setEnabled(b);
+        fPort.setEnabled(b);
+        fService.setEnabled(b);
+    }
+    
+    public void reset() {
+         this.fUser.setText("");
+         this.fPwd.setText("");
+         this.fTns.setText("");
+         this.fHost.setText("");
+         this.fPort.setText("");
+         this.fService.setText("");
+         rbFat.setSelected(true);
+         adJustControlProps();
+    }
+
+    /**
+     * get a oracle connection from the user
+     *
+     * @return a OracleLoginresult, which contains a connection description and
+     * a oracle connection
+     */
+    public OracleLoginResult doLogin() {
+        this.histbox.setSelectedIndex(0);
         dialog.setLocationRelativeTo(null);
         fUser.requestFocusInWindow();
+        this.res = null;
         dialog.setVisible(true);
-
         return res;
-
     }
 
     Preferences getNode() {
@@ -287,17 +305,17 @@ public final class OracleLogin {
         Preferences p2 = getNode();
         String hs = p2.get(histKey, "");
         OraConnectionDesc[] h = decodeHist(hs);
-        ArrayList<OraConnectionDesc> l = new ArrayList<OraConnectionDesc>();
+        ArrayList<OraConnectionDesc> l = new ArrayList<>();
         l.add(d);
 
-        for (int i = 0; i < h.length; i++) {
+        for (OraConnectionDesc h1 : h) {
             if (l.size() >= 10) {
                 break;
             }
-            if (d.display().equals(h[i].display())) {
+            if (d.display().equals(h1.display())) {
                 continue;
             }
-            l.add(h[i]);
+            l.add(h1);
         }
         h = l.toArray(h);
         String s = encodeHist(h);
@@ -343,7 +361,7 @@ public final class OracleLogin {
         for (int i = 0; i < h.length; i++) {
             sv[i + 1] = new StringAndValue(h[i].display(), h[i]);
         }
-        histbox.setModel(new DefaultComboBoxModel<StringAndValue>(sv));
+        histbox.setModel(new DefaultComboBoxModel<>(sv));
     }
 
     final void setUpHistBox() {
@@ -395,11 +413,18 @@ public final class OracleLogin {
                 desc = new OciConnectionDesc(user, pwd, tns);
             }
             OracleConnection con = desc.getConnection();
-
+            if (this.checker!=null) {
+                String s =this.checker.check(desc, con);
+                if (s!=null) {
+                     JOptionPane.showMessageDialog(dialog,s, "Error", JOptionPane.ERROR_MESSAGE);  
+                     con.close();
+                     return;
+                }
+            }
             res = new OracleLoginResult(con, desc);
             saveToHist(desc, this.cbSavePwd.isSelected());
             dialog.setVisible(false);
-        } catch (Exception ex) {
+        } catch (NumberFormatException | SQLException ex) {
             JOptionPane.showMessageDialog(dialog, ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (UnsatisfiedLinkError er) {
             JOptionPane.showMessageDialog(dialog, "Use a thin connection: " + er.toString(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -455,7 +480,7 @@ public final class OracleLogin {
 
     static OraConnectionDesc[] decodeHist(String s) {
         String[] a = s.split("\\|");
-        ArrayList<OraConnectionDesc> al = new ArrayList<OraConnectionDesc>();
+        ArrayList<OraConnectionDesc> al = new ArrayList<>();
         for (String w : a) {
             if (w == null || w.equals("")) {
                 continue;
