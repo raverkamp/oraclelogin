@@ -30,7 +30,7 @@ public final class OracleLogin {
             connectionDesc = d;
         }
     }
-    
+
     OracleLoginResult res = null;
     final JTextField fUser = new JTextField();
     final JTextField fPwd = new JPasswordField(30);
@@ -55,7 +55,7 @@ public final class OracleLogin {
      * @param title the title of the dialog
      * @param preferencesKey the key under which to store the connection history
      */
-    public OracleLogin(String title, String preferencesKey,ConnectionCheck checker) {
+    public OracleLogin(String title, String preferencesKey, ConnectionCheck checker) {
         this.checker = checker;
         this.title = title;
         this.preferencesKey = preferencesKey;
@@ -238,11 +238,11 @@ public final class OracleLogin {
         dialog.getRootPane().setDefaultButton(btnOk);
 
         dialog.pack();
-        
+
     }
-    
+
     public OracleLogin(String title, String preferencesKey) {
-        this(title,preferencesKey,null);
+        this(title, preferencesKey, null);
     }
 
     private void adJustControlProps() {
@@ -252,16 +252,16 @@ public final class OracleLogin {
         fPort.setEnabled(b);
         fService.setEnabled(b);
     }
-    
+
     public void reset() {
-         this.fUser.setText("");
-         this.fPwd.setText("");
-         this.fTns.setText("");
-         this.fHost.setText("");
-         this.fPort.setText("");
-         this.fService.setText("");
-         rbFat.setSelected(true);
-         adJustControlProps();
+        this.fUser.setText("");
+        this.fPwd.setText("");
+        this.fTns.setText("");
+        this.fHost.setText("");
+        this.fPort.setText("");
+        this.fService.setText("");
+        rbFat.setSelected(true);
+        adJustControlProps();
     }
 
     /**
@@ -413,12 +413,12 @@ public final class OracleLogin {
                 desc = new OciConnectionDesc(user, pwd, tns);
             }
             OracleConnection con = desc.getConnection();
-            if (this.checker!=null) {
-                String s =this.checker.check(desc, con);
-                if (s!=null) {
-                     JOptionPane.showMessageDialog(dialog,s, "Error", JOptionPane.ERROR_MESSAGE);  
-                     con.close();
-                     return;
+            if (this.checker != null) {
+                String s = this.checker.check(desc, con);
+                if (s != null) {
+                    JOptionPane.showMessageDialog(dialog, s, "Error", JOptionPane.ERROR_MESSAGE);
+                    con.close();
+                    return;
                 }
             }
             res = new OracleLoginResult(con, desc);
