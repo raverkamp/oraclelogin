@@ -38,12 +38,21 @@ public class TestParse {
         
         OraConnectionDesc d2 =  OraConnectionDesc.fromString("a/b@n");
         assertTrue(d2.hasPwd());
+        assertTrue(d2.getPassword().equals("b"));
+        assertTrue(d2.getUser().equals("a"));
+        assertTrue(d2 instanceof OciConnectionDesc);
+
         
         OraConnectionDesc d3 =  OraConnectionDesc.fromString("a/b@n:12:roland");
         assertTrue(d3.hasPwd());
+        assertTrue(d3.getPassword().equals("b"));
+        assertTrue(d3.getUser().equals("a"));
+        assertTrue(d3 instanceof ThinConnectionDesc);
         
         OraConnectionDesc d4 = OraConnectionDesc.fromString("a@n:12:roland");
         assertTrue(!d4.hasPwd());
+        assertTrue(d4.getUser().equals("a"));
+        assertTrue(d4 instanceof ThinConnectionDesc);
     }
 
     @Test(expected=ParseException.class) 

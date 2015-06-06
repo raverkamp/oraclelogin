@@ -24,4 +24,14 @@ final class OciConnectionDesc extends OraConnectionDesc {
         return (OracleConnection) DriverManager.getConnection("jdbc:oracle:oci:@" + tnsname, user, pwd);
     }
 
+    @Override
+    public String getConnectionString() {
+        return "jdbc:oracle:oci:@" + tnsname;
+    }
+
+    @Override
+    public String getFullConnectionString() {
+        return "jdbc:oracle:oci:" + this.user + "/" + this.pwd + "@" + this.tnsname;
+    }
+
 }

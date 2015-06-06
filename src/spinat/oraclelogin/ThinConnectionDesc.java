@@ -29,4 +29,14 @@ final class ThinConnectionDesc extends OraConnectionDesc {
         return (OracleConnection) DriverManager.getConnection(s, user, pwd);
     }
 
+    @Override
+    public String getConnectionString() {
+        return "jdbc:oracle:thin:@" + host + ":" + port + ":" + service;
+    }
+
+    @Override
+    public String getFullConnectionString() {
+        return "jdbc:oracle:thin:" + this.user + "/" + this.pwd + "@" + host + ":" + port + ":" + service;
+    }
+
 }

@@ -5,8 +5,9 @@ import oracle.jdbc.OracleConnection;
 import java.text.ParseException;
 
 /**
- * @author rav
- * describes an oracle jdbc connection
+ * describes an oracle connection
+ *
+ * @author roland
  */
 public abstract class OraConnectionDesc {
 
@@ -30,6 +31,24 @@ public abstract class OraConnectionDesc {
     }
 
     /**
+     * get the password
+     *
+     * @return password
+     */
+    public String getPassword() {
+        return pwd;
+    }
+
+    /**
+     * get the user
+     *
+     * @return user
+     */
+    public String getUser() {
+        return user;
+    }
+
+    /**
      * set the password of the connection description
      *
      * @param pwd the password
@@ -39,7 +58,22 @@ public abstract class OraConnectionDesc {
     }
 
     /**
-     * get a oracle jdbc connection for the connection desription
+     * get the jdbc connection string, no password is build into it some
+     * applications use the connection string and user, password seperately
+     *
+     * @return the connection string
+     */
+    public abstract String getConnectionString();
+
+    /**
+     * get the jdbc connection string, user and pw are included
+     *
+     * @return the complete connection string
+     */
+    public abstract String getFullConnectionString();
+
+    /**
+     * get a oracle jdbc connection for the connection description
      *
      * @return an oracle jdbc connection
      * @throws SQLException
@@ -77,22 +111,18 @@ public abstract class OraConnectionDesc {
         if (pcolon1 < 0) {
             return new OciConnectionDesc(user, pwd, rest);
         } else {
-            final int pcolon2 = rest.indexOf(":", pcolon1 + 1);
-            if (pcolon2 >= 0) {
-                final String[] a = rest.split(":");
-                if (a.length != 3) {
-                    throw new ParseException("expecting more", 0);
-                }
-                final int x;
-                try {
-                    x = Integer.parseInt(a[1]);
-                } catch (java.lang.NumberFormatException ex) {
-                    throw new ParseException("port must be an integer >0, not: " + a[1], 0);
-                }
-                return new ThinConnectionDesc(user, pwd, a[0], x, a[2]);
-            } else {
+            final String[] a = rest.split(":");
+            if (a.length != 3) {
                 throw new ParseException("expecting a connection string in the form \"user/pwd@host:port:service\"", 0);
             }
+            final int x;
+            try {
+                x = Integer.parseInt(a[1]);
+            } catch (java.lang.NumberFormatException ex) {
+                throw new ParseException("port must be an integer >0, not: " + a[1], 0);
+            }
+            return new ThinConnectionDesc(user, pwd, a[0], x, a[2]);
         }
     }
 }
+
