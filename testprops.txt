@@ -1,0 +1,4 @@
+# this is a file with test properties
+con2=user_cc/user_cc@//localhost:11521/xe
+con1=user_cc/user_cc@localhost:11521:xe
+
